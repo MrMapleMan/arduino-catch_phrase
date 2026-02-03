@@ -1,3 +1,4 @@
+import random
 import tkinter as tk
 from tkinter import ttk
 import time
@@ -106,6 +107,16 @@ class TickingTimer:
             self.flash()
             
             self.root.after(int(self.tick_interval * 1000), self.update)
+
+    def load_words(self):
+        with open('resources/word_lists.csv', 'r') as f:
+            self.words = [line.strip().split(',')[0] for line in f if line.strip()]
+
+    def fetch_word(self):
+        if hasattr(self, 'words') and self.words:
+            return random.choice(self.words)
+        return None
+
 
 if __name__ == "__main__":
     root = tk.Tk()
