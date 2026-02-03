@@ -17,21 +17,25 @@ class TickingTimer:
         self.start_time = None
         self.tick_interval = 1.0
         self.min_interval = 0.1
+        self.load_words()
+        self._update_job_id = None
         
         # GUI setup
         self.root.title("Ticking Timer")
+        self.word_label = ttk.Label(root, text="Press Start", font=("Arial", 24, "bold"))
+        self.word_label.pack(pady=20)
         button_frame = ttk.Frame(root)
         button_frame.pack(pady=10, fill=tk.BOTH, expand=True)
 
-        ttk.Button(button_frame, text="Start", command=self.start_timer).pack(pady=5, fill=tk.BOTH, expand=True)
-        ttk.Button(button_frame, text="Reset", command=self.reset_timer).pack(pady=5, fill=tk.BOTH, expand=True)
-        ttk.Button(button_frame, text="Stop", command=self.stop_timer).pack(pady=5, fill=tk.BOTH, expand=True)
+        tk.Button(button_frame, text="Start", command=self.start_timer).pack(pady=5, fill=tk.BOTH, expand=True)
+        tk.Button(button_frame, text="Reset", command=self.reset_timer).pack(pady=5, fill=tk.BOTH, expand=True)
+        tk.Button(button_frame, text="Stop", command=self.stop_timer).pack(pady=5, fill=tk.BOTH, expand=True)
 
         for button in button_frame.winfo_children():
             button.bind(
                 "<Configure>",
                 lambda e, b=button: b.configure(font=("Arial", max(10, int(e.width / 10)))))  # Changed from config to configure
-            self.label = ttk.Label(root, text="Ready", font=("Arial", 14))
+        self.label = ttk.Label(root, text="Ready", font=("Arial", 14))
         self.label.pack(pady=10)
 
         # Flashing background setup
@@ -45,13 +49,23 @@ class TickingTimer:
             self.state = TimerState.RUNNING
             self.start_time = time.time()
             self.tick_interval = 1.0
+            new_word = self.fetch_word()
+            if new_word:
+                self.word_label.config(text=new_word)
             self.update()
     
     def reset_timer(self):
+        if self._update_job_id:
+            self.root.after_cancel(self._update_job_id)
+            self._update_job_id = None
+            
         self.state = TimerState.RESET
         self.start_time = time.time()
         self.tick_interval = 1.0
         self.label.config(text="Reset!")
+        new_word = self.fetch_word()
+        if new_word:
+            self.word_label.config(text=new_word)
         # Restore background in case a flash was active
         self._restore_bg_immediate()
         if self.state == TimerState.RESET:
@@ -59,8 +73,13 @@ class TickingTimer:
             self.update()
     
     def stop_timer(self):
+        if self._update_job_id:
+            self.root.after_cancel(self._update_job_id)
+            self._update_job_id = None
+            
         self.state = TimerState.IDLE
         self.label.config(text="Ready")
+        self.word_label.config(text="Press Start")
         # Ensure background restored when stopping
         self._restore_bg_immediate()
     
@@ -97,6 +116,7 @@ class TickingTimer:
             if elapsed >= self.duration:
                 self.state = TimerState.IDLE
                 self.label.config(text="Timer expired!")
+                self._update_job_id = None
                 return
             
             # Decrease interval as time progresses (increasing frequency)
@@ -106,7 +126,7 @@ class TickingTimer:
             # Non-blocking quick flash to indicate tick
             self.flash()
             
-            self.root.after(int(self.tick_interval * 1000), self.update)
+            self._update_job_id = self.root.after(int(self.tick_interval * 1000), self.update)
 
     def load_words(self):
         with open('resources/word_lists.csv', 'r') as f:

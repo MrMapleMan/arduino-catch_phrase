@@ -15,7 +15,8 @@ categories = [
 
 def gen_word_list(dict_path, word_list_path, num_words = 10000):
     with open(dict_path, 'r') as f:
-        words = [line.strip() for line in f if line.strip()]
+        words = [line.strip() for line in f if line.strip().isalpha()]
+        words = [word for word in words if not (word.endswith("'s") or word.endswith("’s"))]
     rand_words = [random.choice(words) for _ in range(num_words)]
     with open(word_list_path, 'w') as f:
         for word in rand_words:
