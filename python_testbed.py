@@ -19,10 +19,18 @@ class TickingTimer:
         
         # GUI setup
         self.root.title("Ticking Timer")
-        ttk.Button(root, text="Start", command=self.start_timer).pack(pady=5)
-        ttk.Button(root, text="Reset", command=self.reset_timer).pack(pady=5)
-        ttk.Button(root, text="Stop", command=self.stop_timer).pack(pady=5)
-        self.label = ttk.Label(root, text="Ready", font=("Arial", 14))
+        button_frame = ttk.Frame(root)
+        button_frame.pack(pady=10, fill=tk.BOTH, expand=True)
+
+        ttk.Button(button_frame, text="Start", command=self.start_timer).pack(pady=5, fill=tk.BOTH, expand=True)
+        ttk.Button(button_frame, text="Reset", command=self.reset_timer).pack(pady=5, fill=tk.BOTH, expand=True)
+        ttk.Button(button_frame, text="Stop", command=self.stop_timer).pack(pady=5, fill=tk.BOTH, expand=True)
+
+        for button in button_frame.winfo_children():
+            button.bind(
+                "<Configure>",
+                lambda e, b=button: b.configure(font=("Arial", max(10, int(e.width / 10)))))  # Changed from config to configure
+            self.label = ttk.Label(root, text="Ready", font=("Arial", 14))
         self.label.pack(pady=10)
 
         # Flashing background setup
