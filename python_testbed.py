@@ -27,8 +27,7 @@ class TickingTimer:
         button_frame = ttk.Frame(root)
         button_frame.pack(pady=10, fill=tk.BOTH, expand=True)
 
-        tk.Button(button_frame, text="Start", command=self.start_timer).pack(pady=5, fill=tk.BOTH, expand=True)
-        tk.Button(button_frame, text="Reset", command=self.reset_timer).pack(pady=5, fill=tk.BOTH, expand=True)
+        tk.Button(button_frame, text="Next", command=self.reset_timer).pack(pady=5, fill=tk.BOTH, expand=True)
         tk.Button(button_frame, text="Stop", command=self.stop_timer).pack(pady=5, fill=tk.BOTH, expand=True)
 
         for button in button_frame.winfo_children():
