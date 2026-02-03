@@ -34,7 +34,7 @@ class TickingTimer:
         for button in button_frame.winfo_children():
             button.bind(
                 "<Configure>",
-                lambda e, b=button: b.configure(font=("Arial", max(10, int(e.width / 10)))))  # Changed from config to configure
+                lambda e, b=button: b.configure(font=("Arial", max(10, int(e.width / 10)))))
         self.label = ttk.Label(root, text="Ready", font=("Arial", 14))
         self.label.pack(pady=10)
 
